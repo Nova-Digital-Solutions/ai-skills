@@ -129,6 +129,32 @@ For each list/collection view:
 - [ ] Success notification style specified (toast, inline, redirect)?
 - [ ] Undo option for destructive actions specified?
 
+### Layout & Scroll Behavior
+
+For each page/view, think through: "If this page has lots of content, 
+what will the user need to always see while scrolling?"
+
+**Review Questions:**
+1. **Will navigation disappear?** If the header scrolls away, how does user navigate?
+2. **Will context disappear?** Can user always see WHAT they're looking at?
+3. **Will primary actions disappear?** Submit buttons, main CTAs - still accessible after scroll?
+4. **For split views:** Does each panel scroll independently, or does scrolling 
+   one panel affect the other?
+
+**Common Gaps to Flag:**
+- List + sidebar views where sidebar disappears on scroll (sidebar should be sticky)
+- Detail pages with action buttons that scroll out of view (actions should be sticky)
+- Forms where submit button is only at the bottom (submit area should be sticky or floating)
+- Headers that scroll away losing context (header should be sticky)
+- Split-panel views that scroll as one unit instead of independently
+
+**If Not Specified, Add to Gaps:**
+"Page layout doesn't specify scroll behavior. Recommend: [specific suggestion based on page type]"
+
+Example: "Ticket detail page should have: sticky header with ticket info, 
+sticky reply composer at bottom, scrollable conversation thread, 
+scrollable sidebar for metadata."
+
 ---
 
 ## Step 5: Interaction Pattern Check
@@ -275,6 +301,12 @@ For a fast review, output this checklist:
 - [ ] All parent-child operations covered
 - [ ] Cascade/orphan behavior specified
 - [ ] Hierarchy depth specified (if nested)
+
+### Layout & Scroll Behavior
+- [ ] Sticky elements specified for each page (header, sidebar, actions)
+- [ ] Scroll containers defined (what scrolls vs stays fixed)
+- [ ] Split views scroll independently (if applicable)
+- [ ] Primary actions remain accessible while scrolling
 
 ### API Alignment
 - [ ] Every POST endpoint has create story

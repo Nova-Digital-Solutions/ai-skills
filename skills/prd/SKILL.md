@@ -14,11 +14,78 @@ Create detailed, implementation-ready Product Requirements Documents that leave 
 1. Receive a feature description from the user
 2. Run through the **Entity Discovery** phase
 3. Run through the **Interaction Completeness** phase
-4. Run through the **UI States & Patterns** phase
-5. Generate a structured PRD with complete user stories
-6. Save to `tasks/prd-[feature-name].md`
+4. Run through the **Interaction Appropriateness** phase (right component for the task?)
+5. Run through the **UI States & Patterns** phase
+6. Generate a structured PRD with complete user stories
+7. Save to `tasks/prd-[feature-name].md`
 
 **Important:** Do NOT start implementing. Just create the PRD.
+
+---
+
+## PRD Types: Feature PRDs vs Change PRDs
+
+Before creating a PRD, determine which type you need:
+
+### Feature PRDs (New Features)
+- Full, comprehensive PRDs using the phases below
+- Live in `PRDs/Done/` after implementation
+- Represent the **source of truth** for what exists in the system NOW
+- Updated via prd-sync after changes are implemented
+- Never track historical changes - just current reality
+
+**Use this skill for Feature PRDs.**
+
+### Change PRDs (Improvements to Existing Features)
+- Lightweight PRDs for modifications to features that already have a Feature PRD
+- Temporary documents that define a specific change/improvement
+- Get picked up by Ralph, built, then become obsolete
+- After implementation, the Feature PRD gets synced to reflect the change
+
+**Workflow for Changes:**
+1. Create a Change PRD in `PRDs/Pending/`
+2. Ralph picks it up → moves to `PRDs/In Progress/`
+3. Change complete → delete or archive the Change PRD
+4. Run prd-sync on the original Feature PRD → it now reflects the improvement
+
+**Change PRD Template (use this instead of full phases):**
+
+```markdown
+# CHANGE: [Brief Description]
+
+**Parent PRD:** PRD-XXX-Feature-Name.md
+**Status:** Pending | In Progress | Complete
+
+## Problem
+What's wrong or could be better?
+
+## Proposed Change
+What specifically should change?
+
+## Affected User Stories
+Which existing user stories are modified? List by ID (e.g., US-010, US-015)
+
+## New User Stories (if any)
+### US-NEW-001: [Story title]
+**As a** [user type]
+**I want to** [action]
+**So that** [benefit]
+
+**Trigger:** [How user initiates]
+**Flow:** [Steps]
+**Acceptance Criteria:**
+- [ ] Criterion 1
+- [ ] Criterion 2
+
+## Acceptance Criteria
+- [ ] Specific thing 1
+- [ ] Specific thing 2
+
+## Notes
+Any context for Ralph
+```
+
+**Key insight:** Change PRDs are **ephemeral work tickets**, not permanent documentation. Feature PRDs in `Done/` are the permanent record.
 
 ---
 
@@ -117,6 +184,73 @@ Repeat this for EVERY entity. Do not skip entities that are "contained within" o
 
 ---
 
+## Phase 2.5: Interaction Appropriateness
+
+After identifying WHAT operations exist, consider WHETHER the interaction pattern matches the task. This prevents "technically complete but feels basic" implementations.
+
+### The Core Question
+
+For each input, control, or action, ask: 
+"Given how users will actually use this, is this the right type of component?"
+
+### Common Decision Points
+
+Don't exhaustively answer all of these - just the ones relevant to your feature:
+
+**Selection & Search:**
+- Single item: Simple dropdown, or needs search/filtering for long lists?
+- Multiple items: Checkboxes, or additive chips that stay visible?
+- Entity references (contacts, tags, etc.): Plain text, or select-and-add?
+- Search: Text filtering, or structured/faceted search with multiple dimensions?
+
+**Temporal Inputs:**
+- Single date: Picker sufficient, or needs time component?
+- Date range: Two pickers, or unified range selector?
+- Relative dates: Specific dates, or "last 7 days" / "this quarter" options?
+- Recurring: Simple interval, or complex scheduling (2nd Tuesday of month)?
+
+**Text & Content:**
+- Length: Single line, textarea, or auto-growing?
+- Formatting: Plain text, markdown, or rich text editor?
+- Suggestions: Free-form, or offer autocomplete/templates?
+
+**State & Status:**
+- Binary state: Checkbox, toggle, or button?
+- Multiple states: Dropdown, radio buttons, or segmented control?
+- Workflow states: Linear progression indicator, or freeform selection?
+
+**Display & Layout:**
+- List of items: Table (data-heavy), cards (visual), list (compact), or user choice?
+- Hierarchical data: Flat list, nested/tree, or grouped with headers?
+- Comparisons: Side-by-side, or overlay/diff view?
+
+**Actions & Placement:**
+- Primary action: Prominent position (top-right, or bottom-right of forms)?
+- Secondary actions: Grouped with primary, or separated?
+- Destructive actions: Requires deliberate access (menu, confirmation)?
+- Contextual actions: Inline with items, or in a toolbar/header?
+
+**Feedback & Confirmation:**
+- Success: Toast (ephemeral), inline (persistent), or redirect?
+- Errors: Inline per-field, summary at top, or modal?
+- Confirmations: Modal dialog, inline expand, or undo-based (act then offer undo)?
+
+### How to Use This
+
+Pick 2-3 decision points most relevant to your feature. For each:
+1. State the current assumption (or lack thereof)
+2. Consider alternatives
+3. Document the choice in the PRD
+
+Example:
+> **Contact assignment in ticket**: Using additive chip selector. User types to search, 
+> clicks contact to add as chip. Multiple contacts supported. Chips removable via X. 
+> Why: Users often assign to multiple contacts; seeing who's already assigned matters.
+
+This prevents an agent from implementing a plain text input where a smart selector would be expected.
+
+---
+
 ## Phase 3: UI States & Patterns
 
 ### Ask the User:
@@ -151,6 +285,30 @@ CONFIRMATION PATTERNS:
 KEYBOARD & ACCESSIBILITY:
  A. Any keyboard shortcuts needed?
  B. Tab order considerations?
+
+VIEWPORT & SCROLL BEHAVIOR:
+
+Think through each page from the user's perspective: "While I'm scrolling 
+through content, what do I need to always see or access?"
+
+Typically STICKY (user needs constant access):
+- Navigation: Can user always get back/navigate elsewhere?
+- Context: Does user always know what they're looking at? (title, breadcrumbs, selected item)
+- Primary actions: Submit buttons, "Add New", key CTAs - will they scroll out of view?
+- Filters/search: If user scrolls a long list, can they still filter?
+
+Typically SCROLLS (the actual content):
+- List items, table rows, conversation threads
+- Form fields (but NOT the submit button)
+- Detail content, activity history
+- Secondary metadata
+
+For SPLIT VIEWS (sidebar + main content, or list + detail):
+- Each panel usually scrolls independently
+- User shouldn't lose the sidebar when scrolling main content
+- User shouldn't lose the list when scrolling detail
+
+Ask: "If this page has 100+ items or a long form, what breaks?"
 ```
 
 ---
@@ -258,6 +416,11 @@ Before finalizing the PRD, verify:
 - [ ] Pagination/infinite scroll specified
 - [ ] Bulk actions story exists (if applicable)
 
+### For Page Layouts:
+- [ ] Sticky elements specified (header, sidebar, action bars)
+- [ ] Scroll containers defined (what scrolls vs stays fixed)
+- [ ] Split views scroll independently (if applicable)
+
 ---
 
 ## Example: Complete Task Coverage
@@ -331,3 +494,4 @@ Before saving the PRD:
 - [ ] Confirmation dialogs specified for destructive actions
 - [ ] Relationships and hierarchies documented
 - [ ] No implicit assumptions - everything is explicit
+- [ ] Scroll behavior specified for each page (sticky elements, scroll containers)

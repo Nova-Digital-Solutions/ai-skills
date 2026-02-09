@@ -13,6 +13,12 @@ Converts existing PRDs to the prd.json format that Ralph uses for autonomous exe
 
 Take a PRD (markdown file or text) and convert it to `prd.json` in your ralph directory.
 
+**IMPORTANT:** Always add PRD changes to the **main `prd.json` file**, not separate files. If a `prd.json` already exists:
+1. Read the existing `prd.json` file
+2. Add the new PRD's `prdContext` entry to the existing `prdContext` object
+3. Add the new user stories to the existing `userStories` array, renumbering them sequentially (continuing from the last story ID)
+4. Never create separate files like `prd-change-XXX.json` - all changes go into the main `prd.json`
+
 ---
 
 ## Output Format
@@ -22,6 +28,21 @@ Take a PRD (markdown file or text) and convert it to `prd.json` in your ralph di
  "project": "[Project Name]",
  "branchName": "ralph/[feature-name-kebab-case]",
  "description": "[Feature description from PRD title/intro]",
+ "sourcePrd": "[Relative path to the source PRD markdown file]",
+ "prdContext": {
+   "PRD-XXX": {
+     "name": "[Module Name from PRD title]",
+     "overview": "[1-2 sentences from PRD Overview section]",
+     "background": "[1-2 sentences from PRD Background section explaining domain context]",
+     "goals": [
+       "Goal 1: Description",
+       "Goal 2: Description"
+     ],
+     "coreConcepts": {
+       "ConceptName": "Definition (only include if PRD has important domain concepts)"
+     }
+   }
+ },
  "userStories": [
  {
  "id": "US-001",
@@ -34,11 +55,44 @@ Take a PRD (markdown file or text) and convert it to `prd.json` in your ralph di
  ],
  "priority": 1,
  "passes": false,
- "notes": ""
+ "notes": "PRD-XXX: [section reference] - See '[UI Specification section name]' for mockups"
  }
  ]
 }
 ```
+
+### Source PRD (Important)
+
+The `sourcePrd` field points to the original PRD markdown file. This is critical because:
+- The JSON is the **task checklist** (what to do, in what order)
+- The PRD is the **design reference** (UI mockups, interaction patterns, visual specs)
+
+The agent will read both files but follow the JSON for task execution while consulting the PRD for design decisions.
+
+### PRD Context (Important)
+
+The `prdContext` section provides high-level context that helps Ralph understand the module's purpose before implementing individual stories. Extract this from the PRD's opening sections:
+
+- **name**: The module/feature name from the PRD title
+- **overview**: What the module does (from PRD Overview section)
+- **background**: Domain context explaining why this matters (from PRD Background section)
+- **goals**: Array of objectives (from PRD Goals & Objectives section)
+- **coreConcepts**: Optional - include only if the PRD defines important domain terms that Ralph needs to understand (e.g., Queue vs View distinctions, entity relationships)
+
+### Story Notes (Critical for Design Context)
+
+**Each user story's `notes` field should reference specific PRD sections** so the agent knows exactly where to look for design details:
+
+```json
+"notes": "CHANGE-044: US-TUX-003 - See 'Multi-Select States (List View)' in UI Specifications"
+```
+
+Good notes patterns:
+- `"PRD-003: US-WORK-005 - See 'Work Item Detail Page' mockup"`
+- `"CHANGE-044: See 'Hierarchical Assignment' in UI Specifications for tree structure"`
+- `"PRD-002: US-TRIAGE-010 - Reference 'Preview Mode Layout' diagram"`
+
+The agent uses these notes to navigate directly to relevant mockups and design specs in the source PRD, rather than guessing at implementation details.
 
 ---
 
@@ -110,6 +164,104 @@ Stories should be **small enough** to complete in one iteration, but **large eno
 - If you cannot describe the change in 2-3 sentences, it is too big.
 - If the story only touches one function/file with trivial changes, it is too small - combine with related work.
 
+### Acceptance Criteria Count (IMPORTANT)
+
+**Target: 8-12 acceptance criteria per story. Maximum: 15.**
+
+Even if the story scope is right, too many criteria exhaust the agent's working memory. Count your criteria - if a story has more than 15, split it.
+
+**Example - Too many criteria (28):**
+```json
+{
+  "id": "US-510",
+  "title": "Views Management page for admins",
+  "acceptanceCriteria": [
+    "Create /settings/views route and page",
+    "Add 'Views Management' item to Settings sidebar",
+    "Page shows 'System Views' section at top",
+    "System Views table shows: drag handle, name, description...",
+    "System views include: All Tickets, My Tickets...",
+    "Edit button opens dialog/sheet with tabs",
+    "Edit dialog shows warning banner",
+    "Filters tab uses same filter builder...",
+    "Columns tab allows drag-to-reorder...",
+    "Save button applies changes...",
+    "Reset to Default button shows confirmation...",
+    "'Shared Views' section below System Views",
+    "Shared Views table shows: drag handle, name...",
+    "Create Shared View opens full view editor",
+    "Sharing tab options: Everyone, Specific Teams...",
+    "Delete shows confirmation...",
+    "Duplicate creates copy...",
+    "Drag-and-drop reordering...",
+    "Reorder saves automatically...",
+    "New order reflects immediately...",
+    "Empty state for Shared Views...",
+    "Non-admins cannot access this page...",
+    "Typecheck passes"
+  ]
+}
+```
+
+**Split by functional area:**
+```json
+{
+  "id": "US-510a",
+  "title": "Views Management page with System Views section",
+  "acceptanceCriteria": [
+    "Create /settings/views route and page",
+    "Add 'Views Management' item to Settings sidebar with LayoutGrid icon",
+    "Page shows 'System Views' section at top with description",
+    "System Views table shows: drag handle, name, description, 'Modified' badge, Edit button, Reset button",
+    "System views include: All Tickets, My Tickets, Unassigned, New, Pending",
+    "Non-admins cannot access this page (redirect to settings home)",
+    "Typecheck passes"
+  ],
+  "priority": 2,
+  "notes": "CHANGE-044: US-TUX-002a - See 'Views Management Page' in UI Specifications"
+},
+{
+  "id": "US-510b",
+  "title": "System View edit dialog",
+  "acceptanceCriteria": [
+    "Edit button opens dialog/sheet with tabs: Filters, Columns, Sort, Grouping",
+    "Edit dialog shows warning banner: 'Changes will affect all users'",
+    "Filters tab uses same filter builder component as view creation",
+    "Columns tab allows drag-to-reorder and show/hide toggles",
+    "Save button applies changes and shows success toast",
+    "Reset to Default button shows confirmation dialog",
+    "Typecheck passes"
+  ],
+  "priority": 3,
+  "notes": "CHANGE-044: US-TUX-002b - See 'View Edit Dialog/Sheet' in UI Specifications"
+},
+{
+  "id": "US-510c",
+  "title": "Shared Views section with CRUD and reordering",
+  "acceptanceCriteria": [
+    "'Shared Views' section below System Views with 'Create Shared View' button",
+    "Shared Views table shows: drag handle, name, Shared With, Created By, Created Date, Edit button, action menu",
+    "Create Shared View opens full view editor with Sharing tab",
+    "Sharing tab options: Everyone (radio), Specific Teams (multi-select), Specific Users (multi-select)",
+    "Action menu has Duplicate and Delete options",
+    "Delete shows confirmation: 'Users who have it favorited will lose access'",
+    "Duplicate creates copy with '(Copy)' suffix and opens in edit mode",
+    "Drag-and-drop reordering within each section saves automatically with toast",
+    "Empty state: 'No shared views yet. Create a shared view...'",
+    "Typecheck passes"
+  ],
+  "priority": 4,
+  "notes": "CHANGE-044: US-TUX-002c - See 'Views Management Page' in UI Specifications"
+}
+```
+
+**Splitting rules:**
+1. **Count criteria** - If > 15, must split
+2. **Find natural boundaries** - Look for distinct functional areas (schema, different UI sections, different user flows)
+3. **Each split gets its own notes** - Reference the specific PRD section for that split
+4. **Maintain dependencies** - Earlier splits should not depend on later ones
+5. **Suffix the ID** - Use US-XXXa, US-XXXb, etc. to show they're related
+
 ---
 
 ## Story Ordering: Dependencies First
@@ -155,13 +307,6 @@ For stories with testable logic, also include:
 "Tests pass"
 ```
 
-### For stories that change UI, also include:
-```
-"Verify in browser using dev-browser skill"
-```
-
-Frontend stories are NOT complete until visually verified. Ralph will use the dev-browser skill to navigate to the page, interact with the UI, and confirm changes work.
-
 ---
 
 ## Conversion Rules
@@ -206,9 +351,18 @@ If a PRD has big features, split them into meaningful chunks - but don't over-sp
 
 **Input PRD:**
 ```markdown
-# Task Status Feature
+# PRD-042: Task Status Feature
 
-Add ability to mark tasks with different statuses.
+## Overview
+The Task Status feature enables users to track progress on individual tasks through a visual status system.
+
+## Background
+Task management apps need clear progress indicators. Users currently cannot distinguish between tasks that are pending, in progress, or completed without manually reviewing each one.
+
+## Goals & Objectives
+1. **Progress Visibility**: Show task status at a glance
+2. **Workflow Efficiency**: Enable quick status updates without opening task details
+3. **Filtering**: Allow users to focus on tasks in specific states
 
 ## Requirements
 - Toggle between pending/in-progress/done on task list
@@ -223,6 +377,19 @@ Add ability to mark tasks with different statuses.
  "project": "TaskApp",
  "branchName": "ralph/task-status",
  "description": "Task Status Feature - Track task progress with status indicators",
+ "sourcePrd": "PRDs/PRD-042-Task-Status.md",
+ "prdContext": {
+   "PRD-042": {
+     "name": "Task Status Feature",
+     "overview": "Enables users to track progress on individual tasks through a visual status system.",
+     "background": "Task management apps need clear progress indicators. Users currently cannot distinguish between tasks that are pending, in progress, or completed without manually reviewing each one.",
+     "goals": [
+       "Progress Visibility: Show task status at a glance",
+       "Workflow Efficiency: Enable quick status updates without opening task details",
+       "Filtering: Allow users to focus on tasks in specific states"
+     ]
+   }
+ },
  "userStories": [
  {
  "id": "US-001",
@@ -237,7 +404,7 @@ Add ability to mark tasks with different statuses.
  ],
  "priority": 1,
  "passes": false,
- "notes": "Schema + backend in one story since they're tightly coupled"
+ "notes": "PRD-042: Schema + backend - See 'Data Model' section"
  },
  {
  "id": "US-002",
@@ -248,13 +415,12 @@ Add ability to mark tasks with different statuses.
  "Each row has status dropdown that saves immediately via updateTaskStatus",
  "Add filter dropdown to page header: All | Pending | In Progress | Done",
  "Filter updates the task list via listTasks query",
- "Filter persists in URL params",
- "Typecheck passes",
- "Verify in browser using dev-browser skill"
- ],
- "priority": 2,
+    "Filter persists in URL params",
+    "Typecheck passes"
+  ],
+  "priority": 2,
  "passes": false,
- "notes": "All status UI in one story - badge, toggle, and filter are related"
+ "notes": "PRD-042: See 'Task List UI' mockup in UI Specifications"
  }
  ]
 }
@@ -262,6 +428,12 @@ Add ability to mark tasks with different statuses.
 
 **Note:** This is 2 stories instead of 4. The first handles all backend work, the second handles all UI work. 
 Each story is still completable in one iteration, but we avoid the overhead of 4 separate iterations for tightly related changes.
+
+**Key points:**
+- `sourcePrd` points to the full PRD with mockups and detailed specs
+- `prdContext` gives quick background context
+- `notes` point to specific sections in the PRD for design details
+- The agent follows the JSON checklist but consults the PRD for implementation guidance
 
 ---
 
@@ -285,11 +457,14 @@ Each story is still completable in one iteration, but we avoid the overhead of 4
 Before writing prd.json, verify:
 
 - [ ] **Previous run archived** (if prd.json exists with different branchName, archive it first)
+- [ ] **sourcePrd field included** pointing to the original PRD markdown file
+- [ ] **prdContext included** with overview, background, and goals extracted from the PRD
+- [ ] **Story notes reference specific PRD sections** (e.g., "CHANGE-044: US-TUX-003 - See 'Multi-Select States' mockup")
 - [ ] Each story is completable in one iteration (small enough)
 - [ ] **Stories aren't over-granular** (combine related schema changes, CRUD operations, and UI components)
+- [ ] **No story has more than 15 acceptance criteria** (split if over - see "Acceptance Criteria Count" section)
 - [ ] Stories are ordered by dependency (schema to backend to UI)
 - [ ] Every story has "Typecheck passes" as criterion
-- [ ] UI stories have "Verify in browser using dev-browser skill" as criterion
 - [ ] Acceptance criteria are verifiable (not vague)
 - [ ] No story depends on a later story
 - [ ] **Design foundation story included** (see below)
@@ -362,8 +537,7 @@ Near the end of UI-heavy PRDs, include:
     "Active states have smooth transitions",
     "Tooltips on collapsed sidebar items",
     "Toast notifications properly positioned and styled",
-    "Typecheck passes",
-    "Verify in browser using dev-browser skill"
+    "Typecheck passes"
   ],
   "priority": 50,
   "passes": false,
