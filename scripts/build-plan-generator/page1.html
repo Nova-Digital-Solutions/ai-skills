@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --border: #334155;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --dim: #64748b;
+    --blue: #3b82f6;
+    --green: #22c55e;
+    --amber: #f59e0b;
+    --purple: #a855f7;
+    --cyan: #06b6d4;
+    --red: #ef4444;
+    --scaffolded: #60a5fa;
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    width: 816px;
+    height: 1056px;
+    padding: 40px 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .title {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .subtitle {
+    font-size: 12px;
+    color: var(--dim);
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  /* Arrow connector */
+  .arrow-down {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3px 0;
+  }
+  .arrow-line { width: 1.5px; height: 14px; background: var(--border); }
+  .arrow-head {
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid var(--border);
+  }
+
+  /* ALREADY BUILT section - expanded */
+  .built-section {
+    width: 640px;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 28px 18px;
+    margin-bottom: 0;
+  }
+  .built-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+
+  /* Core built items as mini-card grid */
+  .built-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .built-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .built-card .gdot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0;
+  }
+  .built-card span {
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  /* This week divider + section */
+  .week-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .week-divider .line { height: 1px; flex: 1; background: var(--border); }
+  .week-divider .label {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--cyan);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .new-items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .new-chip {
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .new-chip.tested {
+    background: rgba(34,197,94,0.1);
+    border: 1px solid rgba(34,197,94,0.25);
+    color: var(--green);
+  }
+  .new-chip.needs-testing {
+    background: rgba(245,158,11,0.1);
+    border: 1px solid rgba(245,158,11,0.25);
+    color: var(--amber);
+  }
+  .chip-status {
+    font-size: 8px;
+    font-weight: 600;
+    opacity: 0.7;
+    margin-left: 4px;
+  }
+
+  .built-note {
+    font-size: 10px;
+    color: var(--dim);
+    font-style: italic;
+    text-align: center;
+  }
+
+  /* WORKSTREAMS */
+  .ws-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--amber);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .tracks-row {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 0;
+  }
+
+  .track-col {
+    flex: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--card);
+  }
+  .track-col.data { border: 1.5px solid var(--red); }
+  .track-col.outreach { border: 1.5px solid var(--amber); }
+  .track-col.intelligence { border: 1.5px solid var(--purple); }
+
+  .track-header {
+    padding: 9px 14px;
+    text-align: center;
+  }
+  .track-header h3 {
+    font-size: 16px;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .track-col.data .track-header h3 { color: var(--red); }
+  .track-col.outreach .track-header h3 { color: var(--amber); }
+  .track-col.intelligence .track-header h3 { color: var(--purple); }
+  .track-header .desc {
+    font-size: 10px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .track-items {
+    padding: 4px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .track-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .track-item-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+  }
+  .dot {
+    width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+  }
+  .dot.built { background: var(--green); }
+  .dot.scaffolded { background: var(--scaffolded); }
+  .dot.next { background: var(--amber); }
+  .dot.later { background: var(--purple); }
+  .dot.tbd { background: var(--dim); }
+
+  .track-item-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .status-text {
+    font-size: 9px;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .status-text.built { color: var(--green); }
+  .status-text.scaffolded { color: var(--scaffolded); }
+  .status-text.next { color: var(--amber); }
+  .status-text.later { color: var(--purple); }
+  .status-text.tbd { color: var(--dim); }
+
+  .status-transition {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    flex-shrink: 0;
+  }
+  .status-old {
+    font-size: 8px;
+    font-weight: 600;
+    text-decoration: line-through;
+    opacity: 0.5;
+  }
+  .status-arrow {
+    font-size: 8px;
+    color: var(--dim);
+  }
+
+  /* END STATE */
+  .end-state {
+    width: 520px;
+    padding: 16px 28px;
+    background: linear-gradient(135deg, rgba(34,197,94,0.06) 0%, rgba(168,85,247,0.06) 100%);
+    border: 1.5px solid rgba(34,197,94,0.2);
+    border-radius: 14px;
+    text-align: center;
+  }
+  .end-state-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .end-state-text {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .end-state-text strong { color: var(--text); }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 10px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+</style>
+</head>
+<body>
+  <div class="title">Orchestration.io</div>
+  <div class="subtitle">Build plan at a glance &nbsp;·&nbsp; Updated {{DATE}}</div>
+
+  <!-- ALREADY BUILT - expanded with weekly changes -->
+  <div class="built-section">
+    <div class="built-label">A L R E A D Y &nbsp; B U I L T</div>
+    <div class="built-grid">
+{{BUILT_CARDS}}
+    </div>
+    <div class="week-divider">
+      <div class="line"></div>
+      <div class="label">Latest Updates</div>
+      <div class="line"></div>
+    </div>
+    <div class="new-items">
+{{NEW_CHIPS}}
+    </div>
+    <div class="built-note">{{PLATFORM_NOTE}}</div>
+  </div>
+
+  <div class="arrow-down"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- THREE PARALLEL WORKSTREAMS -->
+  <div class="ws-label">T H R E E &nbsp; P A R A L L E L &nbsp; W O R K S T R E A M S</div>
+
+  <div class="tracks-row">
+    <!-- Track A -->
+    <div class="track-col data">
+      <div class="track-header">
+        <h3>{{DATA_TITLE}}</h3>
+        <div class="desc">{{DATA_DESC}}</div>
+      </div>
+      <div class="track-items">{{DATA_ITEMS}}</div>
+    </div>
+
+    <!-- Track B -->
+    <div class="track-col outreach">
+      <div class="track-header">
+        <h3>{{OUTREACH_TITLE}}</h3>
+        <div class="desc">{{OUTREACH_DESC}}</div>
+      </div>
+      <div class="track-items">{{OUTREACH_ITEMS}}</div>
+    </div>
+
+    <!-- Track C -->
+    <div class="track-col intelligence">
+      <div class="track-header">
+        <h3>{{INTELLIGENCE_TITLE}}</h3>
+        <div class="desc">{{INTELLIGENCE_DESC}}</div>
+      </div>
+      <div class="track-items">{{INTELLIGENCE_ITEMS}}</div>
+    </div>
+  </div>
+
+  <!-- Colored connector lines matching each track -->
+  <div style="display:flex; justify-content:space-around; width:100%; padding: 0 60px;">
+    <div style="width:2px; height:20px; background:var(--red);"></div>
+    <div style="width:2px; height:20px; background:var(--amber);"></div>
+    <div style="width:2px; height:20px; background:var(--purple);"></div>
+  </div>
+
+  <!-- END STATE -->
+  <div class="end-state">
+    <div class="end-state-label">E N D &nbsp; S T A T E</div>
+    <div class="end-state-text">
+      <strong>One orchestration platform</strong> replacing the manual glue between tools.<br>
+      Deployable across teams and portfolio companies.
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div><span style="color:var(--green)">{{BUILT_COUNT}} Built</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--scaffolded)"></div><span style="color:var(--scaffolded)">{{SCAFFOLDED_COUNT}} Scaffolded</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div><span style="color:var(--amber)">{{NEXT_COUNT}} Up Next</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div><span style="color:var(--purple)">{{LATER_COUNT}} Later</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--dim)"></div><span style="color:var(--dim)">{{TBD_COUNT}} TBD</span></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,98 @@
+{
+  "date": "April 7, 2026",
+
+  "alreadyBuilt": [
+    "Scoring Engine", "What's Next Dashboard", "Pipeline Board",
+    "Activity Timeline", "Sequence Engine", "Tier-Based Playbooks",
+    "CSV Import", "Pipeline Swimlanes", "Data Management",
+    "AI Drafts + Templates"
+  ],
+  "newlyBuilt": [
+    { "name": "Contact Quick Actions", "tested": true },
+    { "name": "Draft Email Editing", "tested": true },
+    { "name": "AI Drafts in Sequences", "tested": false },
+    { "name": "AI Regenerate + Version History", "tested": false },
+    { "name": "Daily Agenda Summary", "tested": true },
+    { "name": "Companies Column Visibility", "tested": true },
+    { "name": "Enrollment Status Improvements", "tested": false }
+  ],
+  "platformNote": "App is live in production and available for direct testing. Plus supporting pages: companies, contacts, imports, settings, data management",
+
+  "tracks": {
+    "data": {
+      "title": "Data Foundation",
+      "description": "Get real data into the platform and fill in the gaps",
+      "items": [
+        { "name": "DealCloud One-Way Sync", "status": "next", "detail": "Pull historical companies + contacts. Read first, zero risk. PRD written, API credentials received." },
+        { "name": "Waterfall Enrichment", "status": "next", "detail": "Auto-fill emails, phones, LinkedIn. Multiple providers in sequence - first match wins." },
+        { "name": "Unified Enrichment Layer", "status": "next", "detail": "Evaluating Clay as single integration covering ZoomInfo, PDL, Sales Intel. Discussion point." }
+      ],
+      "footnote": "Prerequisite: real data to enrich, score, and act on"
+    },
+    "outreach": {
+      "title": "Outreach Engine",
+      "description": "Connect email, build templates, wire up multi-channel sequences",
+      "items": [
+        { "name": "Email OAuth (Outlook + Google)", "status": "scaffolded", "detail": "Connect Outlook directly. Send + track opens, clicks, replies. Google OAuth added. Needs real-user testing." },
+        { "name": "Open/Click/Reply Tracking", "status": "scaffolded", "detail": "Pixel open tracking, link click tracking with HMAC, reply detection. Feeds engagement scores. Needs testing." },
+        { "name": "LinkedIn & Physical Mail", "status": "scaffolded", "detail": "LinkedIn prompts + Handwrytten/Sendoso become sequence steps. Platform orchestrates." },
+        { "name": "Post-Call Follow-Up Drafts", "status": "scaffolded", "detail": "Template category + AI scaffolding exists. Full flow needs call detection + automatic trigger." }
+      ],
+      "footnote": "Can run in parallel with Track A - no hard dependency"
+    },
+    "intelligence": {
+      "title": "Intelligence",
+      "description": "Make the system smarter over time - scaffolding starts early",
+      "items": [
+        { "name": "Signal Detection", "status": "scaffolded", "detail": "Trigger management UI built (create, route, action). Automated detection from LinkedIn/news not yet connected." },
+        { "name": "AI-Assisted Recommendations", "status": "later", "detail": "Who to contact, which channel, relevant context. Coaching briefs before calls. Needs usage data first." },
+        { "name": "Sequence Optimization", "status": "later", "detail": "Track performance by cadence, channel, tier, timing. Target 20-30% connect rate uplift." }
+      ],
+      "footnote": "Scaffolding starts now; full value needs usage data from A+B"
+    }
+  },
+
+  "builtCards": [
+    { "name": "Scoring Engine", "detail": "Multi-factor scoring: fit + engagement + priority. Recalculates daily." },
+    { "name": "What's Next Dashboard", "detail": "Priority-sorted daily action list with agenda summary. First screen of the day." },
+    { "name": "Pipeline Board", "detail": "Visual kanban, discovery through close. Swimlanes, sorting, filters. Configurable stages." },
+    { "name": "Activity Timeline", "detail": "Every touchpoint auto-logged. One chronological view per company." },
+    { "name": "Sequence Engine", "detail": "Multi-step cadences with channel mixing. Human-in-loop always." },
+    { "name": "Tier-Based Playbooks", "detail": "Tier 1 = high-touch. Tier 2/3 = volume. Prescriptive for junior reps." },
+    { "name": "CSV Import", "detail": "Complete CSV import with template, field mapping, duplicate handling, and edge case protection." },
+    { "name": "Pipeline Swimlanes", "detail": "Vertical grouping by theme/tier/stage with collapse/expand. Horizontal grouping + sorting by priority, recency." },
+    { "name": "Data Management", "detail": "Admin data management under Settings with tiered clear/reset scopes and confirmation safeguards." },
+    { "name": "AI Drafts + Templates", "detail": "Full template library with rich-text editor, variable substitution, AI draft generation, and version history." }
+  ],
+
+  "toolLandscape": [
+    { "approach": "Integrate", "badge": "integrate", "tool": "Grata", "desc": "Sourcing stays - API/CSV import replaces manual re-entry into DealCloud." },
+    { "approach": "Integrate", "badge": "integrate", "tool": "DealCloud", "desc": "Stays for deal tracking + firm reporting. Sync replaces manual entry. Replacement is V3+." },
+    { "approach": "Integrate", "badge": "integrate", "tool": "LinkedIn", "desc": "Always stays - platform provides prompts, users execute outreach directly." },
+    { "approach": "Integrate", "badge": "integrate", "tool": "Outlook", "desc": "Sending engine under the hood. Platform drafts + tracks, user always hits send." },
+    { "approach": "Integrate", "badge": "integrate", "tool": "Sendoso", "desc": "Gifting becomes a sequence step. Sendoso fulfills, platform orchestrates." },
+    { "approach": "Integrate", "badge": "integrate", "tool": "Handwrytten", "desc": "Handwritten letters become a sequence step. Same orchestration model as gifting." },
+    { "approach": "Consolidate", "badge": "consolidate", "tool": "Sales Intel", "desc": "Manual phone lookups (5-6 clicks per contact). Absorbed into unified enrichment layer." },
+    { "approach": "Consolidate", "badge": "consolidate", "tool": "ZoomInfo", "desc": "Separate subscription for contact enrichment. Absorbed into unified enrichment layer." },
+    { "approach": "Consolidate", "badge": "consolidate", "tool": "People Data Labs", "desc": "Separate enrichment provider. Absorbed into unified enrichment layer." },
+    { "approach": "Evaluate", "badge": "evaluate", "tool": "Clay", "desc": "Potential unified enrichment layer covering all three. Discussion point." },
+    { "approach": "Manual by Design", "badge": "manual", "tool": "Google Search", "desc": "Part of market mapping research. Stays manual - requires human investigation." },
+    { "approach": "Manual by Design", "badge": "manual", "tool": "Industry Lists", "desc": "Association databases, sourcing lists. Same rationale as Google Search." },
+    { "approach": "Keep as-is", "badge": "keep", "tool": "Google Alerts", "desc": "Stays until signal detection provably covers everything it does and more." },
+    { "approach": "Replace", "badge": "replace", "tool": "OneNote", "desc": "Templates move into the platform - eliminating copy-paste workflow." }
+  ],
+
+  "convergence": [
+    { "name": "Bidirectional DealCloud Sync", "status": "later", "detail": "\"Sync to DealCloud\" at lead-in-touch stage. ~80% automatable. DealCloud stays for post-conversation deals + firm reporting.", "requires": "Track A + Track B live with real users" },
+    { "name": "Replicable GTM Platform", "status": "later", "detail": "Standardized onboarding, shared learnings, leaner stack. Deploy across teams and portfolio companies.", "requires": "All tracks proven with real data" }
+  ],
+
+  "painPoints": [
+    { "text": "Multiple disconnected tools with manual work bridging every handoff", "tag": "Systems" },
+    { "text": "~30% of outreach time spent finding contacts, cleaning data, switching tools", "tag": "Productivity" },
+    { "text": "~50 touchpoints per Tier 1 company across 5+ channels - tracked nowhere", "tag": "Visibility" },
+    { "text": "Post-call follow-up fully manual: copy from OneNote, hand-edit, paste to Outlook", "tag": "Workflow" },
+    { "text": "Outreach process lives in people's heads - hard to scale or onboard juniors", "tag": "Scalability" },
+    { "text": "Signal detection relies on Google Alerts, which misses ~50% of LinkedIn posts", "tag": "Intelligence" }
+  ]
+}
