@@ -97,38 +97,13 @@ Do not hardcode field IDs or option IDs. Query them from the board and cache for
 
 ### Inferring values from context
 
-**Type:** Epic (parent issue with sub-issues), Feature (new functionality), Bug (broken), Task (everything else).
+**Type:** Epic (large, multi-issue), Feature (new functionality), Bug (broken), Task (everything else).
 
 **Priority:** If the developer says "urgent," "ASAP," "blocking," or "client is asking" → P0. Otherwise default to P2.
 
 ### Labels
 
 We use one label: `blocked`. Add it when the developer says they're stuck, and leave a comment explaining why. Remove it when the blocker is resolved.
-
-### Epics & Sub-Issues
-
-An **Epic** is a parent issue that contains sub-issues. Sub-issues are regular issues (Feature, Bug, or Task — never an Epic under an Epic) linked to the parent.
-
-**Creating an Epic with sub-issues:**
-
-1. Create the Epic issue using the standard two-step process. Set Type to Epic.
-2. Create each sub-issue using the standard two-step process. Set Type to Feature, Bug, or Task.
-3. Link each sub-issue to the parent Epic:
-   ```bash
-   # Get the sub-issue's internal ID (not the issue number)
-   SUB_ID=$(gh api repos/OWNER/REPO/issues/SUB_NUMBER --jq '.id')
-
-   # Add it as a sub-issue of the Epic
-   gh api repos/OWNER/REPO/issues/EPIC_NUMBER/sub_issues \
-     --method POST -f sub_issue_id="$SUB_ID"
-   ```
-
-**Hours:** Log hours on sub-issues, not on the Epic. The Epic tracks scope; sub-issues track effort.
-
-**Closing an Epic:** Close it when all sub-issues are done. Check progress via the "Sub-issues progress" field on the board or:
-```bash
-gh api repos/OWNER/REPO/issues/EPIC_NUMBER/sub_issues --jq '.[].state'
-```
 
 ---
 
@@ -166,8 +141,7 @@ If the developer hits a blocker:
 
 If new sub-tasks emerge:
 - Create new issues rather than expanding the current one
-- If there's a parent Epic, add them as sub-issues (see "Epics & Sub-Issues" above)
-- Otherwise, link them in comments
+- Link them in comments
 
 ---
 
