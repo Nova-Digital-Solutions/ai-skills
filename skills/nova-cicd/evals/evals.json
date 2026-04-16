@@ -1,0 +1,40 @@
+{
+  "skill_name": "nova-cicd",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Push this to staging, it's ready",
+      "expected_output": "The agent blocks the direct push to staging and offers to create a PR from dev to staging instead.",
+      "expectations": [
+        "The agent ran validate_action.sh or equivalent guardrail check for push to staging",
+        "The agent blocked the direct push with a clear explanation",
+        "The agent explained that staging only accepts PRs from dev",
+        "The agent offered to create a PR from dev to staging as an alternative",
+        "The agent did NOT push directly to staging"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "We need a hotfix, payments are broken in production right now",
+      "expected_output": "The agent initiates the hotfix workflow — branching off upstream/main (or explaining the missing upstream remote) and guiding through the emergency fix process.",
+      "expectations": [
+        "The agent recognized this as a hotfix scenario requiring urgency",
+        "The agent attempted to branch off upstream/main or explained the missing upstream remote",
+        "The agent referenced the hotfix playbook or described the correct hotfix workflow",
+        "The agent did NOT suggest going through the normal weekly release cycle",
+        "The agent provided clear next steps for the emergency fix"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "What's going out in next week's release?",
+      "expected_output": "The agent runs release_status.sh to show queued commits and provides schedule context about the weekly release cycle.",
+      "expectations": [
+        "The agent ran release_status.sh or equivalent to check queued commits",
+        "The agent provided context about the weekly release schedule",
+        "The agent mentioned the Tuesday auto-PR or Wednesday merge/deploy timeline",
+        "The agent handled the missing upstream remote gracefully if applicable"
+      ]
+    }
+  ]
+}
