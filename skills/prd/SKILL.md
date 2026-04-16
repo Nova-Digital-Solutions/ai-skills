@@ -12,12 +12,13 @@ Create detailed, implementation-ready Product Requirements Documents that leave 
 ## The Job
 
 1. Receive a feature description from the user
-2. Run through the **Entity Discovery** phase
-3. Run through the **Interaction Completeness** phase
-4. Run through the **Interaction Appropriateness** phase (right component for the task?)
-5. Run through the **UI States & Patterns** phase
-6. Generate a structured PRD with complete user stories
-7. Save to `tasks/prd-[feature-name].md`
+2. Run through the **Entity Discovery** phase (Phase 1)
+3. Run through the **Interaction Completeness** phase (Phase 2) — CRUD for every entity
+4. Run through the **Cross-PRD & External Dependencies** phase (Phase 2.5) — fallbacks, data shape alignment, testability
+5. Run through the **Interaction Appropriateness** phase (Phase 3) — right component for the task?
+6. Run through the **UI States & Patterns** phase (Phase 4)
+7. Generate a structured PRD with complete user stories (Phase 5)
+8. Save to the appropriate PRD file for your project structure
 
 **Important:** Do NOT start implementing. Just create the PRD.
 
@@ -29,31 +30,23 @@ Before creating a PRD, determine which type you need:
 
 ### Feature PRDs (New Features)
 - Full, comprehensive PRDs using the phases below
-- Live in `PRDs/Done/` after implementation
-- Represent the **source of truth** for what exists in the system NOW
-- Updated via prd-sync after changes are implemented
-- Never track historical changes - just current reality
+- Represent the **source of truth** for what exists in the system after implementation
+- Stored in your project's PRD directory (e.g., `docs/prds/`, `PRDs/`, etc.)
+- Never track historical changes — just current reality
 
 **Use this skill for Feature PRDs.**
 
 ### Change PRDs (Improvements to Existing Features)
 - Lightweight PRDs for modifications to features that already have a Feature PRD
-- Temporary documents that define a specific change/improvement
-- Get picked up by Ralph, built, then become obsolete
-- After implementation, the Feature PRD gets synced to reflect the change
-
-**Workflow for Changes:**
-1. Create a Change PRD in `PRDs/Pending/`
-2. Ralph picks it up → moves to `PRDs/In Progress/`
-3. Change complete → delete or archive the Change PRD
-4. Run prd-sync on the original Feature PRD → it now reflects the improvement
+- Temporary documents that define a specific change or improvement
+- After implementation, the parent Feature PRD is updated to reflect the change, and the Change PRD is archived or deleted
 
 **Change PRD Template (use this instead of full phases):**
 
 ```markdown
 # CHANGE: [Brief Description]
 
-**Parent PRD:** PRD-XXX-Feature-Name.md
+**Parent PRD:** [parent PRD filename]
 **Status:** Pending | In Progress | Complete
 
 ## Problem
@@ -82,10 +75,10 @@ Which existing user stories are modified? List by ID (e.g., US-010, US-015)
 - [ ] Specific thing 2
 
 ## Notes
-Any context for Ralph
+Any implementation context for the agent
 ```
 
-**Key insight:** Change PRDs are **ephemeral work tickets**, not permanent documentation. Feature PRDs in `Done/` are the permanent record.
+**Key insight:** Change PRDs are **ephemeral work tickets**, not permanent documentation. Feature PRDs are the permanent record.
 
 ---
 
@@ -184,7 +177,28 @@ Repeat this for EVERY entity. Do not skip entities that are "contained within" o
 
 ---
 
-## Phase 2.5: Interaction Appropriateness
+## Phase 2.5: Cross-PRD & External Dependencies
+
+After the data model and operations are defined, check for any integration points with other PRDs or external systems. This is the right time — you now know what entities and fields exist.
+
+For each dependency identified:
+
+**A. Fallback behavior** — What happens when the dependency isn't built yet?
+- Is the dependent UI element hidden, disabled, or replaced with a placeholder?
+- Is this specified in the affected user stories?
+
+**B. Data shape alignment** — Does the data model produce the shape each consuming component expects?
+- If a component takes `(oldContent: string, newContent: string)`, don't store a pre-computed diff — store both sides
+- If a selector expects `{ id, label }[]`, don't return raw DB records
+- Mismatches here cause silent bugs or dead code; catch them at design time
+
+**C. Testability** — Can each workflow group be exercised without the dependency?
+- If not, add a dev note to the affected user stories explaining how to seed test data
+- Don't leave "this feature will be tested when PRD-X is built" implicit
+
+---
+
+## Phase 3: Interaction Appropriateness
 
 After identifying WHAT operations exist, consider WHETHER the interaction pattern matches the task. This prevents "technically complete but feels basic" implementations.
 
@@ -251,7 +265,7 @@ This prevents an agent from implementing a plain text input where a smart select
 
 ---
 
-## Phase 3: UI States & Patterns
+## Phase 4: UI States & Patterns
 
 ### Ask the User:
 
@@ -313,7 +327,7 @@ Ask: "If this page has 100+ items or a long form, what breaks?"
 
 ---
 
-## Phase 4: Generate the PRD
+## Phase 5: Generate the PRD
 
 Using all gathered information, generate a PRD with these sections:
 
@@ -334,6 +348,8 @@ For each entity, you MUST have stories for:
 - Editing existing
 - Deleting
 - Any additional operations identified
+
+**Story ID numbering:** Continue from the highest existing `US-XXX` number in the project's PRDs. If this is the first PRD, start at `US-001`. Never reuse an ID — even if a story is deleted, its number is retired.
 
 **Format:**
 ```markdown
@@ -359,7 +375,6 @@ For each entity, you MUST have stories for:
 - [ ] Loading state shows [skeleton/spinner] while fetching
 - [ ] Error state shows [message] with retry option
 - [ ] Success shows [toast/redirect/inline message]
-- [ ] [For UI stories] Verify in browser using dev-browser skill
 ```
 
 ### 4. UI Specifications
@@ -373,11 +388,11 @@ For each screen/view, specify:
 ### 5. Functional Requirements
 Numbered list of specific functionalities (FR-001, FR-002, etc.)
 
-### 6. API Requirements
-Endpoints needed for each operation.
+### 6. Backend API / Functions
+Backend functions, mutations, queries, or endpoints needed for each operation. Use the terminology and style of your project's backend (REST endpoints, Convex functions, GraphQL mutations, tRPC procedures, etc.).
 
 ### 7. Data Models
-TypeScript interfaces for all entities.
+Data model definitions for all entities, using the project's language and conventions (TypeScript interfaces, Python dataclasses, Go structs, DB schema, etc.).
 
 ### 8. Non-Goals (Out of Scope)
 What this feature will NOT include.
@@ -388,38 +403,19 @@ How will success be measured?
 ### 10. Open Questions
 Remaining questions or areas needing clarification.
 
----
+### 11. Implementation Notes
+Edge cases, algorithmic decisions, failure contracts, and cross-PRD wiring details.
 
-## User Story Completeness Checklist
+### 12. Package Dependencies
+Every npm/pip/etc. package introduced by this PRD (not already in the project).
 
-Before finalizing the PRD, verify:
+```markdown
+| Package | Purpose |
+|---------|---------|
+| `package-name` | What it's used for |
+```
 
-### For Each Entity:
-- [ ] CREATE story exists with specific trigger and flow
-- [ ] READ (list) story exists if entity appears in list
-- [ ] READ (detail) story exists if entity has detail view
-- [ ] UPDATE story exists with editable fields specified
-- [ ] DELETE story exists with confirmation and cascade behavior
-- [ ] Empty state specified
-- [ ] Loading state specified
-- [ ] Error handling specified
-
-### For Relationships:
-- [ ] If A contains B, there's a story for managing B within A's context
-- [ ] If B has children, there's stories for the child operations
-- [ ] Cascade delete behavior is specified
-
-### For Lists:
-- [ ] Sorting story exists (if sortable)
-- [ ] Filtering story exists (if filterable)
-- [ ] Search story exists (if searchable)
-- [ ] Pagination/infinite scroll specified
-- [ ] Bulk actions story exists (if applicable)
-
-### For Page Layouts:
-- [ ] Sticky elements specified (header, sidebar, action bars)
-- [ ] Scroll containers defined (what scrolls vs stays fixed)
-- [ ] Split views scroll independently (if applicable)
+If no new packages are needed, write: "No new package dependencies."
 
 ---
 
@@ -476,7 +472,7 @@ If you have a "Tasks" entity within "Work Items", you need ALL of these stories:
 ## Output
 
 - **Format:** Markdown (`.md`)
-- **Location:** `tasks/`
+- **Location:** Your project's PRD directory (e.g., `docs/prds/`, `PRDs/`, `specs/`)
 - **Filename:** `prd-[feature-name].md` (kebab-case)
 
 ---
@@ -495,3 +491,9 @@ Before saving the PRD:
 - [ ] Relationships and hierarchies documented
 - [ ] No implicit assumptions - everything is explicit
 - [ ] Scroll behavior specified for each page (sticky elements, scroll containers)
+- [ ] Every query/list sorted or filtered by a custom field has a database index defined
+- [ ] Overview claims don't contradict non-goals or deferral notes
+- [ ] All npm/package dependencies listed in Section 12
+- [ ] Every workflow group is testable in this PRD alone, or has a dev note about seeding
+- [ ] Cross-PRD dependencies have explicit fallback behavior defined
+- [ ] Component prop interfaces align with the data model shapes that feed them *(only check this if the PRD defines shared component interfaces)*
