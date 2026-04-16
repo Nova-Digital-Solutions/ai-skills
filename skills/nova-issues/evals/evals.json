@@ -1,0 +1,40 @@
+{
+  "skill_name": "nova-issues",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm starting work on adding dark mode support for the client portal",
+      "expected_output": "The agent creates or finds an existing issue for dark mode support, sets its Status to In Progress on the Nova Work Board, and assigns it to the current developer.",
+      "expectations": [
+        "The agent ran preflight.sh or equivalent gh commands to discover the project board",
+        "The agent searched for existing issues about dark mode before creating a new one",
+        "The agent created an issue (via create_issue.sh or gh issue create) if none existed",
+        "The issue was added to the Nova Work Board with Status set to In Progress or Backlog",
+        "The agent assigned the issue to the current user"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "This is done, I spent about 3 hours on it",
+      "expected_output": "The agent detects the current issue from git context, asks for confirmation of hours, and closes the issue with Hours=3 and Status=Done on the board.",
+      "expectations": [
+        "The agent ran infer_issue_from_context.sh or parsed the branch/commits for an issue number",
+        "The agent confirmed the issue identity with the user before closing",
+        "The agent ran close_issue.sh or equivalent with --hours 3",
+        "The agent set Status to Done on the board",
+        "The agent recorded 3 hours in the Hours field"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I'm blocked on the auth integration, waiting for the API team to give us credentials",
+      "expected_output": "The agent identifies the current issue, adds a blocked label or comment, and communicates the blocking reason on the issue.",
+      "expectations": [
+        "The agent identified the current issue from git context",
+        "The agent added a 'blocked' label or equivalent status indicator to the issue",
+        "The agent added a comment on the issue explaining the blocking reason",
+        "The agent did NOT close the issue"
+      ]
+    }
+  ]
+}

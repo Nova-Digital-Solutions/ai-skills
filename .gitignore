@@ -1,1 +1,4 @@
 .DS_Store
+
+# Skill eval workspaces (test artifacts, regenerable)
+skills/*-workspace/
