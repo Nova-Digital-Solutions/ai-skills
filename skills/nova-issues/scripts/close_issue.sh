@@ -59,6 +59,7 @@ ISSUE_NODE_ID=$(gh api "repos/${REPO}/issues/${ISSUE_NUMBER}" --jq '.node_id' 2>
 }
 
 # Query the project to find the item ID for this issue
+# Match by issue node ID (not just number) to avoid cross-repo collisions
 ITEM_DATA=$(gh api graphql -f query='
 query($projectId: ID!) {
   node(id: $projectId) {
@@ -70,6 +71,7 @@ query($projectId: ID!) {
             ... on Issue {
               id
               number
+              repository { nameWithOwner }
             }
           }
         }
@@ -81,7 +83,7 @@ query($projectId: ID!) {
     exit 1
 }
 
-ITEM_ID=$(echo "$ITEM_DATA" | jq -r ".data.node.items.nodes[] | select(.content.number == $ISSUE_NUMBER) | .id" | head -1)
+ITEM_ID=$(echo "$ITEM_DATA" | jq -r ".data.node.items.nodes[] | select(.content.id == \"$ISSUE_NODE_ID\") | .id" | head -1)
 
 if [ -z "$ITEM_ID" ] || [ "$ITEM_ID" = "null" ]; then
     echo -e "${YELLOW}WARNING: Issue #${ISSUE_NUMBER} not found on board. Skipping field updates.${NC}"

@@ -224,16 +224,22 @@ After adding, set project fields (Priority, Size, Status, and optionally Type) u
 
 ### Labels
 
-We use one label: **`blocked`**.
+Labels are for cross-cutting signals that board fields (Type, Priority, Size) don't capture. Keep the set small — don't duplicate what's on the board.
 
-Add it when work can't proceed, and always leave a comment explaining why:
+| Label | Color | When to apply | When to remove |
+|-------|-------|---------------|----------------|
+| `blocked` | `F9D0C4` | Work can't proceed — always add a comment explaining why | Blocker resolved |
+| `client-reported` | `C5DEF5` | Issue originated from a client request or complaint | Never (historical record) |
+| `needs-design` | `D4C5F9` | Requires design input before implementation can start | Design delivered |
 
 ```bash
+# Add a label
 gh issue edit NUMBER --repo OWNER/REPO --add-label "blocked"
 gh issue comment NUMBER --repo OWNER/REPO --body "Blocked: waiting on API credentials from client"
-```
 
-Remove it when the blocker is resolved.
+# Remove a label
+gh issue edit NUMBER --repo OWNER/REPO --remove-label "blocked"
+```
 
 ### Closing an Issue
 

@@ -101,6 +101,20 @@ Issue closes (via PR merge or manual close)
   └─ NEVER skip the hours prompt. This is how Nova bills.
 ```
 
+## Labels
+
+Labels are for cross-cutting concerns that board fields don't capture. Do NOT duplicate board fields (Type, Priority, Size) as labels.
+
+| Label | When to apply | When to remove |
+|---|---|---|
+| `blocked` | Work can't proceed — always add a comment explaining why | Blocker resolved |
+| `client-reported` | Issue originated from a client request or complaint | Never (historical record) |
+| `needs-design` | Requires design input before implementation can start | Design delivered |
+
+Apply labels during issue creation or when the situation changes. Use `gh issue edit NUMBER --repo OWNER/REPO --add-label "LABEL"`.
+
+Ensure these labels exist in each repo. If missing, create them during repo setup (see `references/repo-setup.md`).
+
 ## Issue Creation
 
 Three-step process — **never use `gh issue create --project`** (it's fragile and often fails):

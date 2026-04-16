@@ -45,11 +45,21 @@ for label in bug documentation duplicate enhancement "good first issue" "help wa
   gh label delete "$label" --repo Nova-Digital-Solutions/PROJECT_NAME --yes 2>/dev/null || true
 done
 
-# Create the blocked label (the only label Nova uses)
+# Create Nova's labels
 gh label create "blocked" \
   --repo Nova-Digital-Solutions/PROJECT_NAME \
   --description "Work is blocked — see issue comments for reason" \
-  --color "D93F0B"
+  --color "F9D0C4" --force
+
+gh label create "client-reported" \
+  --repo Nova-Digital-Solutions/PROJECT_NAME \
+  --description "Originated from a client request or complaint" \
+  --color "C5DEF5" --force
+
+gh label create "needs-design" \
+  --repo Nova-Digital-Solutions/PROJECT_NAME \
+  --description "Requires design input before implementation" \
+  --color "D4C5F9" --force
 ```
 
 ## 5. Repository Settings
